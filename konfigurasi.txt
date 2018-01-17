@@ -1,0 +1,337 @@
+kmk all
+hostname : kmkall
+username : kmkall
+password : kmkall123
+
+username : davidall
+password : davidall123
+
+Step by step Install wordpress using ansible
+
+1. Configure Sudo non-root 
+   $ adduser davidall
+   $ gpasswd -a davidall sudo
+
+2. Generate a pair key
+   $ ssh-keygen -t rsa
+   $ ssh-copy-id davidall@192.168.146.140
+   
+3. Passwordless sudo access
+   $ visudo
+   Add this line at the end:
+   davidall ALL=(ALL) NOPASSWD: ALL
+   
+4. Installing Ansible
+   $ sudo apt-get install ansible -y
+   $ ansible --version
+
+5. Setting up the file strukture
+   $ cd ~
+   $ mkdir wordpress-ansible && cd wordpress-ansible
+   $ touch playbook.yml
+   $ touch hosts
+   
+   $ mkdir roles && cd roles
+   $ ansible-galaxy init server 
+   $ ansible-galaxy init php 
+   $ ansible-galaxy init mysql
+   $ ansible-galaxy init wordpress
+   
+6. Writing the Playbook
+   $ vim wordpress-ansible/hosts
+   -------------------
+   [wordpress]
+   wordpress_server_ip
+   -------------------
+ 
+   $ vim wordpress-ansible/playbook
+   -------------------
+   - hosts: wordpress
+
+    roles:
+    - server
+    - php
+    - mysql
+    - wordpress
+   -------------------
+   
+   check connection 
+   ansible-playbook playbook.yml -i hosts -u davidall -K
+   
+7. Creating Roles
+    
+   Server
+   $ vim roles/server/tasks/main.yml
+		---
+		- name: Update apt cache
+		   apt: update_cache=yes cache_valid_time=3600
+		   sudo: yes
+
+	    - name: Install required software
+		   apt: name={{ item }} state=present
+		   sudo: yes
+		   with_items:
+			 - apache2
+			 - mysql-server
+			 - php5-mysql
+			 - php5
+			 - libapache2-mod-php5
+			 - php5-mcrypt
+			 - python-mysqldb
+
+    php
+	$ vim roles/php/tasks/main.yml
+		---
+		- name: Install php extensions
+		  apt: name={{ item }} state=present
+		  sudo: yes
+		  with_items:
+			- php5-gd 
+			- libssh2-php
+			
+	MySQL
+	$ vim roles/mysql/defaults/main.yml
+		---
+		wp_mysql_db: wordpress
+		wp_mysql_user: wordpress
+		wp_mysql_password: wp_db_password
+		
+	$ vim roles/mysql/tasks/main.yml
+	---
+	- name: Create mysql database
+	  mysql_db: name={{ wp_mysql_db }} state=present
+
+	- name: Create mysql user
+	  mysql_user: 
+		name={{ wp_mysql_user }} 
+		password={{ wp_mysql_password }} 
+		priv=*.*:ALL
+		
+		
+    Wordpress
+	$ vim roles/wordpress/tasks/main.yml
+	---
+	# tasks file for wordpress
+	- name: Download WordPress
+	  get_url: url=https://wordpress.org/latest.tar.gz dest=/tmp/wordpress.tar.gz validate_certs=no
+	  sudo: yes
+
+	- name: Extract WordPress
+	  unarchive: src=/tmp/wordpress.tar.gz dest='/var/www/' copy=no
+	  sudo: yes
+
+	- name: Update default Apache site
+	  sudo: yes
+	  lineinfile: dest=/etc/apache2/sites-enabled/000-default.conf regexp="(.)+DocumentRoot /var/www/html" line="DocumentRoot /var/www/wordpress"
+	  notify: restart apache
+
+	- name: Copy sample config file
+	  command: mv /var/www/wordpress/wp-config-sample.php /var/www/wordpress/wp-config.php creates=/var/www/wordpress/wp-config.php
+	  sudo: yes
+
+	- name: Update WordPress config file
+	  lineinfile:
+		dest=/var/www/wordpress/wp-config.php
+		regexp="{{ item.regexp }}"
+		line="{{ item.line }}"
+	  with_items:
+		- {'regexp': "define\\('DB_NAME', '(.)+'\\);", 'line': "define('DB_NAME', '{{wp_mysql_db}}');"}
+		- {'regexp': "define\\('DB_USER', '(.)+'\\);", 'line': "define('DB_USER', '{{wp_mysql_user}}');"}
+		- {'regexp': "define\\('DB_PASSWORD', '(.)+'\\);", 'line': "define('DB_PASSWORD', '{{wp_mysql_password}}');"}
+	  sudo: yes
+   
+    $ vim roles/wordpress/handlers/main.yml
+		---
+		# handlers file for wordpress
+
+		- name: restart apache
+		  service: name=apache2 state=restarted
+		  sudo: yes
+    
+	Cacti 
+	---
+	# tasks file for cacti
+
+
+	- name: Update apt cache
+	  apt: update_cache=yes cache_valid_time=3600
+	  sudo: yes
+
+	- name: Install cacti
+	  apt: name={{ item }} state=present
+	  sudo: yes
+	  with_items:
+		- cacti-cactid
+
+		  
+	Start ansible :
+	ansible-playbook playbook.yml -i hosts -u davidall -K
+	
+	
+	
+	
+	
+	
+	
+	
+	username : ADMWIR000001
+account name : Wiratech 
+
+Wirat3chtop88
+
+new password vm :
+yK5kbj
+
+
+mysql : n
+nano
+
+ftp : 
+user : david
+password : if534245
+
+
+inet 172.16.0.78  netmask 255.240.0.0
+
+116.206.196.230/public_html/wp-admin
+
+
+
+www.mesinfilling.com niru mesinwiratech.com (pake add domain)
+
+setelah saya cek untuk wiratech.co.id ada pada paket dedicated hosting yaitu paket aramon dengan spesifikasi sebagai berikut :)
+16 GB Disk Space2 
+CPU Core4 GB Memory
+
+13.2 + 17,3 + 12 + 20 + 
+
+. How would you find all text instances of 'foo' in directory /dir?
+grep -rl "foo" /dir/
+
+b. How would you replace all text instances of 'foo' with 'bar' for all files within directory /dir?
+sed -i 's/foo/bar/g' *
+
+Solarwinds
+
+
+Be proactive
+Monitor the performance, capacity, and health of Linux and Windows apps across data centers, remote offices, and the cloud.
+Get deep insight
+Detailed app health and performance metrics help you pinpoint the root cause of application issues.
+One dashboard
+Monitor multi-vendor applications, servers, databases, and storage from a single, easy-to-use, customizable web interface.
+Save time
+Automated discovery of applications and infrastructure, customizable monitoring templates, and pre-built alerts and reports.
+Save money
+Minimize downtime, forecast capacity needs, optimize resources, reduce overhead, and achieve ROI.
+
+a. Solarwinds
+
+b. Because it can monitor the performance, capacity and health of Linux and Windows apps accross data centers, remote office
+ and cloud. It also can provide detailed app health and performance that caused application issues.
+ In one dashboard, solarwinds has monitor multi-vendor applications, servers, database and storage from a single,
+ easy yo use, customizable web interface
+
+ 
+ Question: 3 of 5 questions
+
+Given following output from command dig
+
+    $ dig www.vidio.com A
+
+    ; <<>> DiG 9.9.5-3ubuntu0.6-Ubuntu <<>> www.vidio.com A
+    ;; global options: +cmd
+    ;; Got answer:
+    ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 8823
+    ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 4, ADDITIONAL: 0
+
+    ;; QUESTION SECTION:
+    ;www.vidio.com.         IN  A
+
+    ;; ANSWER SECTION:
+    www.vidio.com.      2492    IN  A   52.76.210.178
+
+    ;; AUTHORITY SECTION:
+    vidio.com.      3503    IN  NS  ns-1062.awsdns-04.org.
+    vidio.com.      3503    IN  NS  ns-2043.awsdns-63.co.uk.
+    vidio.com.      3503    IN  NS  ns-226.awsdns-28.com.
+    vidio.com.      3503    IN  NS  ns-848.awsdns-42.net.
+
+    ;; Query time: 1 msec
+    ;; SERVER: 127.0.0.1#53(127.0.0.1)
+    ;; WHEN: Tue Nov 01 11:06:23 WIB 2016
+    ;; MSG SIZE  rcvd: 184
+
+a. You are just changing the dns entry for www.vidio.com to new ip address, how fast you can expect your new entry will be shown on your computer.
+
+b. If you want the change immediately applied to your computer, what you can do?
+
+c. Other user just reported the day after he still pointing to old ip address. Why that could happen?
+ 
+ [12:16 PM, 12/6/2017] Abdi Sipahutar: a. 1-3 hari pra 
+b. tambahi record domain dengan ip baru di file /etc/hosts (linux)
+c. Proses update IP baru domain masih belum selesai, cache browser dibersihkan
+
+
+#!/bin/sh
+
+#file = "/home/david/folder"
+file = "$@"
+
+
+if [$file]
+then 
+	echo "File found"
+else
+	echo "File Not Found, please read how to usage this script"
+	
+	#tar -cjvf "file/$f.tar.bz2" "$file"
+		
+	tar czvf mytar.tar.gz "$@"
+	rm -rf $f
+	
+
+	Create simple shell script for compressing file or directory. This script should meet this guidelines
+
+- First argument is file or directory that will be compressed
+- If no argument specified, it will shown help or usage of this script
+- Output filename is the same name as file or directory name, plus suffix current date + extensions
+- Script will give a warning when output filename already exist, then exit
+
+Example:
+
+./compress.sh /var/data 
+
+It will compress directory /var/data to /var/data_2017-02-10.tar.bz2
+	---------------	
+	#!/bin/sh
+
+file = "$@"
+
+
+if [!$file]
+then 
+	echo "File Not Found, please read how to usage this script"
+else	
+		
+	tar czvf mytar.tar.gz "$@"
+	rm -rf $f
+fi
+
+[1:06 PM, 12/6/2017] Abdi Sipahutar: #!/bin/bash
+
+if [ -z "$1" ] 
+then
+  echo "This script must be run with file or dir as input argument."
+  echo -e "\nUsage:\n sh compress.sh [compressname.tar.gz] [files/folder]\n"
+  exit 1
+else
+  tar -czvf $1 $2
+fi
+
+Ansible is the simplest way to deploy your applications. It gives you the power to deploy multi-tier applications reliably and consistently, all from one common framework. You can configure needed services as well as push application artifacts from one common system.
+
+
+A. IRather than writing custom code to automate your systems, your team writes simple task descriptions that even the newest team member can understand on first read - saving not only up-front costs, but making it easier to react to change over time.
+
+   
