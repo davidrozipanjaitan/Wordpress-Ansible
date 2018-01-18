@@ -1,8 +1,0 @@
-- hosts: wordpress-cacti
-
-  roles:
-   - server
-   - php
-   - mysql
-   - wordpress
-   - cacti
