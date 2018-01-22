@@ -379,3 +379,15 @@ A. IRather than writing custom code to automate your systems, your team writes s
    Complete Installation through the Web Interface
    Access http://server_domain_name_or_IP from web browser
    
+   
+   Step by step push file to github using git :
+- klik kanan pada folder project, pilih "git bash here"
+- git add -A
+- git commit -m "<message>"
+- git status
+- git push origin master
+
+pull from repository to local :
+- git remote add origin "http://<repository>"
+- git pull origin master, jika gagal add this command --allow-unrelated-histories
+  sehingga-> git pull origin master --allow-unrelated-histories
