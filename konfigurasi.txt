@@ -334,4 +334,48 @@ Ansible is the simplest way to deploy your applications. It gives you the power 
 
 A. IRather than writing custom code to automate your systems, your team writes simple task descriptions that even the newest team member can understand on first read - saving not only up-front costs, but making it easier to react to change over time.
 
+
+ 
+   Install Wordpress manual on ubuntu 14.04
+   1. Install LAMP
+   - apt-get update
+   - apt-get install openssh-client openssh-server
+   - apt-get install apache2
+   - apt-get install mysql-server php5-mysql
+   - sudo mysql_install_db
+   - sudo mysql_secure_installation
+   - sudo apt-get install php5 libapache2-mod-php5 php5-mcrypt
+   - sudo nano /etc/apache2/mods-enabled/dir.conf (pindahkan index.php ke depan)
+   - sudo service apache2 restart
+   test php apakah sudah terinstall
+   - vim nano /var/www/html/info.php
+   
+   2. Create database
+   - mysql -u root -pada
+   - CREATE DATABASE db_wordpress;
+   - (optional) CREATE USER wordpressuser@localhost IDENTIFIED BY 'password'; (kalau user ada)
+   - (optional) GRANT ALL PRIVILEGES ON wordpress.* TO wordpressuser@localhost;
+   - FLUSH PRIVILEGES;
+   
+   3. Download WordPress
+   - cd ~
+   - wget http://wordpress.org/latest.tar.gz
+   - tar xzvf latest.tar.gz
+   - sudo apt-get update
+   - apt-get install php5-gd libssh2-php
+   
+   4. Configure WordPress
+   - cd ~/wordpress
+   - cp wp-config-sample.php wp-config.php
+   - nano wp-config.php (setting database wordpress)
+   
+   5. Copy Files to the Document Root
+   - sudo rsync -avP ~/wordpress/ /var/www/html/
+   - cd /var/www/html
+   - sudo chown -R demo:www-data *
+   - mkdir /var/www/html/wp-content/uploads
+   - sudo chown -R :www-data /var/www/html/wp-content/uploads
+   
+   Complete Installation through the Web Interface
+   Access http://server_domain_name_or_IP from web browser
    
